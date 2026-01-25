@@ -2,7 +2,7 @@
 
 void Web :: getConection(){   
     udp.beginPacket("255.255.255.255", udpPort);
-    udp.print("ESP32_DISCOVERY");
+    udp.print("DISCOVER_SERVER");
     udp.endPacket();
     delay(1000);
     int packetSize = udp.parsePacket();
@@ -12,7 +12,7 @@ void Web :: getConection(){
         if (len > 0) reply[len] = 0;
         Serial.printf("Resposta recebida: %s\n", reply);
         // Se a resposta for a esperada, conecta via TCP ao IP de quem respondeu
-        if (String(reply) == "SERVER_OK") {
+        if (String(reply) == "SERVER_ACK") {
             IPAddress serverIP = udp.remoteIP();
             Serial.print("Conectando ao TCP em: ");
             Serial.println(serverIP);

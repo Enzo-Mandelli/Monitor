@@ -16,7 +16,7 @@ class Monitor{
         void addChar(String nome, char* ptr);
         bool wait(); //vai esperar o delayTime
         void convertData(void* ptr, char type, String nome);
-        void prepareStatement(String name, String value, String type);
+        void prepareStatement(String name, String value, String type, String pointer);
         String sliceStr(String txt, int index);
         String statement = "";
         //statemente order
