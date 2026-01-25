@@ -18,7 +18,6 @@ class Web{
                 Serial.print(".");
             }
             Serial.println("\nConectado ao WiFi!");
-            
             udp.begin(udpPort);
         }
 
@@ -33,7 +32,7 @@ class Web{
         const char* password = "SENHA";
 
         // Portas
-        const int udpPort = 9478;
-        const int tcpPort = 8080;
+        const int udpPort = 9192;
+        const int tcpPort = 9394;
 
 };
