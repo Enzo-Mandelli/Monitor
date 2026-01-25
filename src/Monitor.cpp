@@ -57,7 +57,7 @@ String Monitor :: sliceStr(String txt, int index){
     for(int i = 1; i < txt.length(); i++){
         if(txt.charAt(i) == ']') cont++;
         if(!txt.charAt(i) == '[' && cont == index && !txt.charAt(i) == ']'){
-           lista + txt.charAt(i);
+           lista = lista + txt.charAt(i);
         }
     }
     return lista;
