@@ -1,5 +1,10 @@
-#include <WiFi.h>
-#include <WiFiUdp.h>
+#ifdef ESP32
+  #include <WiFi.h>
+  #include <WiFiUdp.h>
+#elif defined(ESP8266)
+  #include <ESP8266WiFi.h>
+  #include <WiFiUdp.h> // No ESP8266, o nome é o mesmo, mas o conteúdo muda internamente
+#endif
 
 class Web{
     public:
