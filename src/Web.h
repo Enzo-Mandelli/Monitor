@@ -12,7 +12,9 @@ class Web{
         WiFiUDP udp;
         WiFiClient tcpClient;
         int delayTime = 1000; //delay time between requisitions 
-        Web(){
+        Web(String ssid, String password){
+          this->ssid = ssid;
+          this->password = password;
             WiFi.begin(ssid, password);
             while (WiFi.status() != WL_CONNECTED) {
                 delay(500);
@@ -30,8 +32,8 @@ class Web{
         void changePassword(String password);
     private:
         // Configurações de Rede
-        const char* ssid = "NOME_DO_WIFI";
-        const char* password = "SENHA";
+        String ssid = "NOME_DO_WIFI";
+        String password = "SENHA";
 
         // Portas
         const int udpPort = 9192;
