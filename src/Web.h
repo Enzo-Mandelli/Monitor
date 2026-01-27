@@ -30,8 +30,8 @@ class Web{
         void changePassword(String password);
     private:
         // Configurações de Rede
-        const char* ssid = "NOME_DO_WIFI";
-        const char* password = "SENHA";
+        String ssid = "NOME_DO_WIFI";
+        String password = "SENHA";
 
         // Portas
         const int udpPort = 9192;
