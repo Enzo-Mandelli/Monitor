@@ -13,13 +13,8 @@ class Web{
         WiFiClient tcpClient;
         int delayTime = 1000; //delay time between requisitions 
         Web(){
-            WiFi.begin(ssid, password);
-            while (WiFi.status() != WL_CONNECTED) {
-                delay(500);
-                Serial.print(".");
-            }
-            Serial.println("\nConectado ao WiFi!");
-            udp.begin(udpPort);
+          // Não tenta conectar no construtor porque as credenciais
+          // podem ser atualizadas por Monitor antes da conexão.
         }
 
         void getConection();   
@@ -28,6 +23,7 @@ class Web{
         String receiveData();
         void changeSSID(String ssid);
         void changePassword(String password);
+    bool connectWiFi(unsigned long timeoutMs = 10000);
     private:
         // Configurações de Rede
         String ssid = "NOME_DO_WIFI";

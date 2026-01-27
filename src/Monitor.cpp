@@ -66,6 +66,10 @@ String Monitor :: sliceStr(String txt, int index){
     return lista;
 }
 
+void Monitor :: beggin(){
+    web.getConection();
+}
+
 void Monitor :: addInt(String nome, int* ptr){
     convertData(ptr, 'i', nome);
 }

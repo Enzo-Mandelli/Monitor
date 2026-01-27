@@ -3,11 +3,15 @@
 class Monitor{
     public:
         Web web;
+        String ssid;
+        String password;
         Monitor(String ssid, String password){
+            this->ssid = ssid;
+            this->password = password;
             web.changeSSID(ssid);
             web.changePassword(password);
-            web.getConection();
         }
+        void beggin();
         unsigned long actualTime = 0;
         unsigned long previousTime = 0;
         void update();

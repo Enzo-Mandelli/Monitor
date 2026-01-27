@@ -1,6 +1,12 @@
 #include <Web.h>
 
 void Web :: getConection(){   
+    // Verifica se estamos conectados ao WiFi antes de tentar discovery
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("WiFi não conectado - tentando conectar antes do discovery...");
+        if (!connectWiFi()) return; // falhou ao conectar
+    }
+
     udp.beginPacket("255.255.255.255", udpPort);
     udp.print("DISCOVER_SERVER");
     udp.endPacket();
@@ -25,20 +31,20 @@ void Web :: getConection(){
 }
 
 bool Web :: checkConnection(){
-    bool connected = false;
-    if(!tcpClient.connected()){
+    if (!tcpClient.connected()) {
         getConection();
-        connected = true;
     }
-    return connected;
+    return tcpClient.connected();
 }
 
 void Web :: changeSSID(String ssid){
     this->ssid = ssid;
+    // Tenta (re)conectar imediatamente com a nova SSID
 }
 
 void Web :: changePassword(String password){
     this->password = password;
+    // Tenta (re)conectar imediatamente com a nova senha
 }
 
 void Web :: enviaDados(String data){
@@ -60,6 +66,26 @@ String Web :: receiveData(){
         getConection();
     }
     return data;
+}
+
+bool Web::connectWiFi(unsigned long timeoutMs){
+    Serial.print("Conectando ao WiFi: ");
+    Serial.println(ssid);
+    WiFi.begin(ssid.c_str(), password.c_str());
+    unsigned long start = millis();
+    while (WiFi.status() != WL_CONNECTED && (millis() - start) < timeoutMs) {
+        delay(500);
+        Serial.print(".");
+    }
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("\nConectado ao WiFi!");
+        // Inicializa UDP agora que o WiFi está ativo
+        udp.begin(udpPort);
+        return true;
+    } else {
+        Serial.println("\nFalha ao conectar no WiFi (timeout)");
+        return false;
+    }
 }
 
 
