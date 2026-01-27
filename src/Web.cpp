@@ -34,11 +34,11 @@ bool Web :: checkConnection(){
 }
 
 void Web :: changeSSID(String ssid){
-    this.ssid = ssid;
+    this->ssid = ssid;
 }
 
 void Web :: changePassword(String password){
-    this.password = password;
+    this->password = password;
 }
 
 void Web :: enviaDados(String data){
