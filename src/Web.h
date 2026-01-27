@@ -5,6 +5,7 @@
   #include <ESP8266WiFi.h>
   #include <WiFiUdp.h> // No ESP8266, o nome é o mesmo, mas o conteúdo muda internamente
 #endif
+#include <Arduino.h>
 
 class Web{
     public:

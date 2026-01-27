@@ -3,7 +3,9 @@
 class Monitor{
     public:
         Web web;
-        Monitor(){
+        Monitor(String ssid, String password){
+            web.changeSSID(ssid);
+            web.changePassword(password);
             web.getConection();
         }
         unsigned long actualTime = 0;
