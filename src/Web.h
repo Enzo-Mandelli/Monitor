@@ -12,9 +12,7 @@ class Web{
         WiFiUDP udp;
         WiFiClient tcpClient;
         int delayTime = 1000; //delay time between requisitions 
-        Web(String ssid, String password){
-          this->ssid = ssid;
-          this->password = password;
+        Web(){
             WiFi.begin(ssid, password);
             while (WiFi.status() != WL_CONNECTED) {
                 delay(500);

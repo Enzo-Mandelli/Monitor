@@ -4,7 +4,6 @@ class Monitor{
     public:
         Web web;
         Monitor(String ssid, String password){
-            web = Web(ssid, password);
             web.changeSSID(ssid);
             web.changePassword(password);
             web.getConection();
