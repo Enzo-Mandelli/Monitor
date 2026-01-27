@@ -33,6 +33,14 @@ bool Web :: checkConnection(){
     return connected;
 }
 
+void Web :: changeSSID(String ssid){
+    this.ssid = ssid;
+}
+
+void Web :: changePassword(String password){
+    this.password = password;
+}
+
 void Web :: enviaDados(String data){
     tcpClient.println(data);
 }
