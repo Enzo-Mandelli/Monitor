@@ -25,7 +25,8 @@ class Web{
         bool checkConnection();
         void enviaDados(String data);
         String receiveData();
-
+        void changeSSID(String ssid);
+        void changeSSID(String senha);
     private:
         // Configurações de Rede
         const char* ssid = "NOME_DO_WIFI";
