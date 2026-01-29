@@ -51,19 +51,30 @@ void Monitor :: prepareStatement(String name, String value, String type, String 
     value = sliceStr(statement, 1) + "," + value;
     type = sliceStr(statement, 2) + "," + type;
     pointer = sliceStr(statement, 3) + "," + pointer;
-    statement = "[" + name + "],[" + value + "],[" + type + "]" + "[" + pointer + "]";
+    statement = "[" + name + "][" + value + "][" + type + "]" + "[" + pointer + "]\n";
 }
 
-String Monitor :: sliceStr(String txt, int index){
-    String lista = "";
-    int cont = index + 1;
-    for(int i = 1; i < txt.length(); i++){
-        if(txt.charAt(i) == ']') cont++;
-        if(!txt.charAt(i) == '[' && cont == index && !txt.charAt(i) == ']'){
-           lista = lista + txt.charAt(i);
+String Monitor::sliceStr(String txt, int index) {
+    int openBracket = -1;
+    int closeBracket = -1;
+    int currentIdx = 0;
+
+    for (int i = 0; i < txt.length(); i++) {
+        if (txt.charAt(i) == '[') {
+            if (currentIdx == index) openBracket = i;
+        } else if (txt.charAt(i) == ']') {
+            if (currentIdx == index) {
+                closeBracket = i;
+                break;
+            }
+            currentIdx++;
         }
     }
-    return lista;
+
+    if (openBracket != -1 && closeBracket != -1) {
+        return txt.substring(openBracket + 1, closeBracket);
+    }
+    return "";
 }
 
 void Monitor :: beggin(){
@@ -72,27 +83,34 @@ void Monitor :: beggin(){
 
 void Monitor :: addInt(String nome, int* ptr){
     convertData(ptr, 'i', nome);
+    quantVar++;
 }
 
 void Monitor :: addFloat(String nome, float* ptr){
     convertData(ptr, 'f', nome);
+    quantVar++;
 }
 
 void Monitor :: addBool(String nome, bool* ptr){
     convertData(ptr, 'b', nome);
+    quantVar++;
 }
 
 void Monitor :: addChar(String nome, char* ptr){
     convertData(ptr, 'i', nome);
+    quantVar++;
 }
 
 void Monitor :: addString(String nome, String* ptr){
     convertData(&ptr, 's', nome);
+    quantVar++;
 }
 
 void Monitor::update() {
     //data order [pointer],[data], [type];
     if (wait()) {
+        web.enviaDados(statement);
+        statement = "";
         if (web.checkConnection()) {
             previousTime = millis();
             

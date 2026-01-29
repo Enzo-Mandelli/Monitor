@@ -25,6 +25,7 @@ class Monitor{
         void prepareStatement(String name, String value, String type, String pointer);
         String sliceStr(String txt, int index);
         String statement = "";
+        int quantVar = 0;
         //statemente order
         //[nameVar1, nameVar2, nameVar3], [value1, value2, value3], [tipo1, tipo2, tipo3], [pointer1, pointer2, pointer3]
 

@@ -24,7 +24,7 @@ void Web :: getConection(){
             Serial.println(serverIP);
 
             if (tcpClient.connect(serverIP, tcpPort)) {
-                tcpClient.println("Ola Servidor! Conexao TCP estabelecida.");
+                tcpClient.println("Ok");
             }
         }
     }
