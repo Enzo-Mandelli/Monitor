@@ -12,11 +12,6 @@ class Web{
         WiFiUDP udp;
         WiFiClient tcpClient;
         int delayTime = 1000; //delay time between requisitions 
-        Web(){
-          // Não tenta conectar no construtor porque as credenciais
-          // podem ser atualizadas por Monitor antes da conexão.
-        }
-
         void getConection();   
         bool checkConnection();
         void enviaDados(String data);
