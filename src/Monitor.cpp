@@ -77,31 +77,52 @@ String Monitor::sliceStr(String txt, int index) {
     return "";
 }
 
+bool Monitor :: checkRepeatedVar(void* ptr){
+    String enderecoHex = "0x" + String((uintptr_t)ptr, HEX);
+    String data = sliceStr(statement, 3);
+    String ptrAux = "";
+    for(int i = 0; i < data.length(); i++){
+        if(data.charAt(i) != ','){
+            ptrAux = ptrAux + data.charAt(i);
+        }else{
+            if(ptrAux.equals(enderecoHex)){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void Monitor :: beggin(){
     web.getConection();
 }
 
 void Monitor :: addInt(String nome, int* ptr){
-    convertData(ptr, 'i', nome);
+    if(checkRepeatedVar(ptr))return;
+    (ptr, 'i', nome);
     quantVar++;
 }
 
 void Monitor :: addFloat(String nome, float* ptr){
+    if(checkRepeatedVar(ptr))return;
     convertData(ptr, 'f', nome);
     quantVar++;
 }
 
 void Monitor :: addBool(String nome, bool* ptr){
+    if(checkRepeatedVar(ptr))return;
     convertData(ptr, 'b', nome);
     quantVar++;
 }
 
 void Monitor :: addChar(String nome, char* ptr){
+    if(checkRepeatedVar(ptr))return;
     convertData(ptr, 'i', nome);
     quantVar++;
 }
 
 void Monitor :: addString(String nome, String* ptr){
+    if(checkRepeatedVar(ptr))return;
     convertData(&ptr, 's', nome);
     quantVar++;
 }
