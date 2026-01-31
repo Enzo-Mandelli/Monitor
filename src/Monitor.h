@@ -11,6 +11,7 @@ class Monitor{
             web.changeSSID(ssid);
             web.changePassword(password);
         }
+        bool checkRepeatedVar(void* ptr);
         void beggin();
         unsigned long actualTime = 0;
         unsigned long previousTime = 0;
