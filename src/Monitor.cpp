@@ -134,10 +134,12 @@ void Monitor::update() {
         statement = "";
         if (web.checkConnection()) {
             previousTime = millis();
-            
             String payload = web.receiveData(); 
             if (payload.length() == 0) return; // Segurança contra pacotes vazios
-
+            if(payload.equals("__check__")){
+                web.enviaDados("__online__");
+                return;
+            }
             uintptr_t pointer = strtoul(sliceStr(payload, 0).c_str(), NULL, 0);
             String valueStr = sliceStr(payload, 1); // Valor recebido
             String typeStr  = sliceStr(payload, 2); // Tipo do dado
