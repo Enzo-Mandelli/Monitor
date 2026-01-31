@@ -99,7 +99,7 @@ void Monitor :: beggin(){
 
 void Monitor :: addInt(String nome, int* ptr){
     if(checkRepeatedVar(ptr))return;
-    converData(ptr, 'i', nome);
+    convertData(ptr, 'i', nome);
     quantVar++;
 }
 
