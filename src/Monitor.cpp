@@ -137,7 +137,7 @@ void Monitor::update() {
             String payload = web.receiveData(); 
             if (payload.length() == 0) return; // Segurança contra pacotes vazios
             if(payload.equals("__check__")){
-                web.enviaDados("__online__");
+                web.enviaDados("__online__\n");
                 return;
             }
             uintptr_t pointer = strtoul(sliceStr(payload, 0).c_str(), NULL, 0);
