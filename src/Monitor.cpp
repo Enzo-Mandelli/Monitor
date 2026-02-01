@@ -44,17 +44,21 @@ void Monitor::convertData(void* ptr, char type, String nome) {
     }
 }
 
-void Monitor :: prepareStatement(String name, String value, String type, String pointer){
-    //statement is formed by [names] + [values] + [types] + [pointer]
-    String placeHolder = statement;
-    name = sliceStr(statement, 0) + "," + name;
-    value = sliceStr(statement, 1) + "," + value;
-    type = sliceStr(statement, 2) + "," + type;
-    pointer = sliceStr(statement, 3) + "," + pointer;
-    String sep = (name.length() > 0) ? "," : "";
-    statement = "[" + name + "][" + value + "][" + type + "]" + "[" + pointer + "]\n";
-}
+void Monitor::prepareStatement(String name, String value, String type, String pointer) {
+    // Captura o que já existe
+    String names = sliceStr(statement, 0);
+    String values = sliceStr(statement, 1);
+    String types = sliceStr(statement, 2);
+    String ptrs = sliceStr(statement, 3);
 
+    // Só adiciona vírgula se oldN não estiver vazio
+    String sep = (name.length() > 0) ? "," : "";
+
+    statement = "[" + names + sep + name + "]" +
+                "[" + values + sep + value + "]" +
+                "[" + types + sep + type + "]" +
+                "[" + ptrs + sep + pointer + "]\n";
+}
 String Monitor::sliceStr(String txt, int index) {
     int openBracket = -1;
     int closeBracket = -1;
@@ -141,65 +145,37 @@ void Monitor::updateDataToSend() {
     int typeStart = 0;
 
     for (int i = 0; i < quantVar; i++) {
-        //get the colma index
         int ptrComma = pointersStr.indexOf(',', ptrStart);
         int typeComma = typesStr.indexOf(',', typeStart);
 
-        // get the adress and the type
         String currentPtrHex = (ptrComma == -1) ? pointersStr.substring(ptrStart) : pointersStr.substring(ptrStart, ptrComma);
         String currentType = (typeComma == -1) ? typesStr.substring(typeStart) : typesStr.substring(typeStart, typeComma);
 
-        // Convert str to ptr
-        uintptr_t pointer = strtoul(currentPtrHex.c_str(), NULL, 16); // Base 16 para Hex
-
+        uintptr_t pointer = strtoul(currentPtrHex.c_str(), NULL, 16);
+        
+        // Só processa se o ponteiro for válido
         if (pointer != 0) {
+            // Adiciona vírgula ANTES, exceto no primeiro item
+            if (newValues.length() > 0) newValues += ",";
+
             switch (currentType.charAt(0)) {
-                case 'i': {
-                    int* p = (int*)pointer;
-                    newValues += String(*p);
-                    break;
-                }
-                case 'f': {
-                    float* p = (float*)pointer;
-                    newValues += String(*p);
-                    break;
-                }
-                case 'b': {
-                    bool* p = (bool*)pointer;
-                    newValues += (*p ? "true" : "false");
-                    break;
-                }
-                case 'c': {
-                    char* p = (char*)pointer;
-                    newValues += String(*p);
-                    break;
-                }
-                case 's': {
-                    String* p = (String*)pointer;
-                    newValues += (*p);
-                    break;
-                }
+                case 'i': newValues += String(*(int*)pointer); break;
+                case 'f': newValues += String(*(float*)pointer); break;
+                case 'b': newValues += (*(bool*)pointer ? "true" : "false"); break;
+                case 'c': newValues += String(*(char*)pointer); break;
+                case 's': newValues += *(String*)pointer; break;
             }
         }
 
-        //add colmas
-        if (i < quantVar - 1) {
-            newValues += ",";
-        }
-
-        // update the index
+        // Atualiza índices
         ptrStart = ptrComma + 1;
         typeStart = typeComma + 1;
-        
-        // error check
-        if (ptrComma == -1 && i < quantVar - 1) break;
+        if (ptrComma == -1) break; 
     }
 
-    // update statement
     String names = sliceStr(statement, 0);
     String types = sliceStr(statement, 2);
     String pointers = sliceStr(statement, 3);
-    statement = "";
     statement = "[" + names + "][" + newValues + "][" + types + "][" + pointers + "]\n";
 }
 
