@@ -79,19 +79,24 @@ String Monitor::sliceStr(String txt, int index) {
 
 bool Monitor :: checkRepeatedVar(void* ptr){
     String enderecoHex = "0x" + String((uintptr_t)ptr, HEX);
-    String data = sliceStr(statement, 3);
+    String data = sliceStr(statement, 3); // Pega a parte dos ponteiros
+    if (data.length() == 0) return false;
     String ptrAux = "";
     for(int i = 0; i < data.length(); i++){
-        if(data.charAt(i) != ','){
-            ptrAux = ptrAux + data.charAt(i);
-        }else{
+        char c = data.charAt(i);
+        if(c != ','){
+            ptrAux += c;
+        }
+        if(c == ',' || i == data.length() - 1){
             if(ptrAux.equals(enderecoHex)){
                 return true;
             }
+            ptrAux = "";
         }
     }
     return false;
 }
+
 
 void Monitor :: beggin(){
     web.getConection();
