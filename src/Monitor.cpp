@@ -201,8 +201,8 @@ void Monitor::updateDataToSend() {
 void Monitor::update() {
     //data order [pointer],[data], [type];
     if (wait()) {
-        web.enviaDados(statement);
         updateDataToSend();
+        web.enviaDados(statement);
         if (web.checkConnection()) {
             previousTime = millis();
             String payload = web.receiveData(); 
