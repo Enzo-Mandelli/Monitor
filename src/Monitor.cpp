@@ -28,7 +28,7 @@ void Monitor::convertData(void* ptr, char type, String nome) {
             break;
         }
         case 's': {
-            typeVar = "String";
+            typeVar = "string";
             String* ptrTyped = (String*)ptr;
             prepareStatement(nome, *ptrTyped, typeVar, enderecoHex);
             break;
@@ -123,7 +123,7 @@ void Monitor :: addChar(String nome, char* ptr){
 
 void Monitor :: addString(String nome, String* ptr){
     if(checkRepeatedVar(ptr))return;
-    convertData(&ptr, 's', nome);
+    convertData(ptr, 's', nome);
     quantVar++;
 }
 
@@ -206,7 +206,7 @@ void Monitor::update() {
         if (web.checkConnection()) {
             previousTime = millis();
             String payload = web.receiveData(); 
-            if (payload.length() == 0) return; // Segurança contra pacotes vazios
+            if (payload.length() == 0) return; 
             if(payload.equals("__check__")){
                 web.enviaDados("__online__\n");
                 return;
