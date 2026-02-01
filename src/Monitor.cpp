@@ -52,7 +52,7 @@ void Monitor::prepareStatement(String name, String value, String type, String po
     String ptrs = sliceStr(statement, 3);
 
     // Só adiciona vírgula se oldN não estiver vazio
-    String sep = (name.length() > 0) ? "," : "";
+    String sep = (names.length() > 0) ? "," : "";
 
     statement = "[" + names + sep + name + "]" +
                 "[" + values + sep + value + "]" +
