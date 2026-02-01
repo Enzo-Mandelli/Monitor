@@ -194,7 +194,8 @@ void Monitor::updateDataToSend() {
     String names = sliceStr(statement, 0);
     String types = sliceStr(statement, 2);
     String pointers = sliceStr(statement, 3);
-    
+
+    statement = "";
     statement = "[" + names + "][" + newValues + "][" + types + "][" + pointers + "]\n";
 }
 
