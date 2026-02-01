@@ -126,7 +126,7 @@ void Monitor :: addBool(String nome, bool* ptr){
 
 void Monitor :: addChar(String nome, char* ptr){
     if(checkRepeatedVar(ptr))return;
-    convertData(ptr, 'i', nome);
+    convertData(ptr, 'c', nome);
     quantVar++;
 }
 
