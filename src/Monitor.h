@@ -21,9 +21,10 @@ class Monitor{
         void addBool(String nome, bool* ptr);
         void addString(String nome, String* ptr);
         void addChar(String nome, char* ptr);
-        bool wait(); //vai esperar o delayTime
+        bool wait();
         void convertData(void* ptr, char type, String nome);
         void prepareStatement(String name, String value, String type, String pointer);
+        void updateDataToSend();
         String sliceStr(String txt, int index);
         String statement = "";
         int quantVar = 0;
