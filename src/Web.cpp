@@ -59,7 +59,6 @@ String Web :: receiveData(){
             // Opção A: Ler a linha inteira (ideal para comandos de texto)
             String comando = tcpClient.readStringUntil('\n'); 
             comando.trim(); // Remove espaços ou \r extras
-            Serial.print("Recebido do Java: ");
             data = comando;
         }
     }else{
