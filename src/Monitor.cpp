@@ -127,11 +127,82 @@ void Monitor :: addString(String nome, String* ptr){
     quantVar++;
 }
 
+void Monitor::updateDataToSend() {
+    String pointersStr = sliceStr(statement, 3);
+    String typesStr = sliceStr(statement, 2);
+    String newValues = "";
+    
+    int ptrStart = 0;
+    int typeStart = 0;
+
+    for (int i = 0; i < quantVar; i++) {
+        //get the colma index
+        int ptrComma = pointersStr.indexOf(',', ptrStart);
+        int typeComma = typesStr.indexOf(',', typeStart);
+
+        // get the adress and the type
+        String currentPtrHex = (ptrComma == -1) ? pointersStr.substring(ptrStart) : pointersStr.substring(ptrStart, ptrComma);
+        String currentType = (typeComma == -1) ? typesStr.substring(typeStart) : typesStr.substring(typeStart, typeComma);
+
+        // Convert str to ptr
+        uintptr_t pointer = strtoul(currentPtrHex.c_str(), NULL, 16); // Base 16 para Hex
+
+        if (pointer != 0) {
+            switch (currentType.charAt(0)) {
+                case 'i': {
+                    int* p = (int*)pointer;
+                    newValues += String(*p);
+                    break;
+                }
+                case 'f': {
+                    float* p = (float*)pointer;
+                    newValues += String(*p);
+                    break;
+                }
+                case 'b': {
+                    bool* p = (bool*)pointer;
+                    newValues += (*p ? "true" : "false");
+                    break;
+                }
+                case 'c': {
+                    char* p = (char*)pointer;
+                    newValues += String(*p);
+                    break;
+                }
+                case 's': {
+                    String* p = (String*)pointer;
+                    newValues += (*p);
+                    break;
+                }
+            }
+        }
+
+        //add colmas
+        if (i < quantVar - 1) {
+            newValues += ",";
+        }
+
+        // update the index
+        ptrStart = ptrComma + 1;
+        typeStart = typeComma + 1;
+        
+        // error check
+        if (ptrComma == -1 && i < quantVar - 1) break;
+    }
+
+    // update statement
+    String names = sliceStr(statement, 0);
+    String types = sliceStr(statement, 2);
+    String pointers = sliceStr(statement, 3);
+    
+    statement = "[" + names + "][" + newValues + "][" + types + "][" + pointers + "]\n";
+}
+
 void Monitor::update() {
     //data order [pointer],[data], [type];
     if (wait()) {
         web.enviaDados(statement);
-        statement = "";
+        updateDataToSend();
         if (web.checkConnection()) {
             previousTime = millis();
             String payload = web.receiveData(); 
