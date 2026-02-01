@@ -51,6 +51,7 @@ void Monitor :: prepareStatement(String name, String value, String type, String 
     value = sliceStr(statement, 1) + "," + value;
     type = sliceStr(statement, 2) + "," + type;
     pointer = sliceStr(statement, 3) + "," + pointer;
+    String sep = (name.length() > 0) ? "," : "";
     statement = "[" + name + "][" + value + "][" + type + "]" + "[" + pointer + "]\n";
 }
 
@@ -96,7 +97,6 @@ bool Monitor :: checkRepeatedVar(void* ptr){
     }
     return false;
 }
-
 
 void Monitor :: beggin(){
     web.getConection();
@@ -199,7 +199,6 @@ void Monitor::updateDataToSend() {
     String names = sliceStr(statement, 0);
     String types = sliceStr(statement, 2);
     String pointers = sliceStr(statement, 3);
-
     statement = "";
     statement = "[" + names + "][" + newValues + "][" + types + "][" + pointers + "]\n";
 }
