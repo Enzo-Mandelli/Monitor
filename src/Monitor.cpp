@@ -154,9 +154,9 @@ void Monitor :: addDouble(String nome, double* ptr){
     quantVar++;
 }
 
-void Monitor :: addFloat(String nome, float* ptr){
+void Monitor :: addLong(String nome, long* ptr){
     if(checkRepeatedVar(ptr))return;
-    convertData(ptr, 'd', nome);
+    convertData(ptr, 'l', nome);
     quantVar++;
 }
 
