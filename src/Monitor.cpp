@@ -254,7 +254,7 @@ void Monitor::update() {
                 }
                 case 'd': {
                     double* ptrTyped = (double*)pointer;
-                    *ptrTyped = valueStr.toDouble();
+                    *ptrTyped = atof(valueStr.c_str());
                     break;
                 }
 
