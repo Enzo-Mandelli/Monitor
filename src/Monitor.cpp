@@ -28,7 +28,7 @@ void Monitor::convertData(void* ptr, char type, String nome) {
             break;
         }
         case 's': {
-            typeVar = "String";
+            typeVar = "string";
             String* ptrTyped = (String*)ptr;
             prepareStatement(nome, *ptrTyped, typeVar, enderecoHex);
             break;
@@ -39,21 +39,38 @@ void Monitor::convertData(void* ptr, char type, String nome) {
             prepareStatement(nome, String(*ptrTyped), typeVar, enderecoHex);
             break;
         }
+        case 'd':{
+            typeVar = "double";
+            double* ptrTyped = (double*)ptr;
+            prepareStatement(nome, String(*ptrTyped), typeVar, enderecoHex);
+            break;
+        }
+        case 'l':{
+            typeVar = "long";
+            long* ptrTyped = (long*)ptr;
+            prepareStatement(nome, String(*ptrTyped), typeVar, enderecoHex);
+            break;
+        }
         default:
             break;
     }
 }
 
-void Monitor :: prepareStatement(String name, String value, String type, String pointer){
-    //statement is formed by [names] + [values] + [types] + [pointer]
-    String placeHolder = statement;
-    name = sliceStr(statement, 0) + "," + name;
-    value = sliceStr(statement, 1) + "," + value;
-    type = sliceStr(statement, 2) + "," + type;
-    pointer = sliceStr(statement, 3) + "," + pointer;
-    statement = "[" + name + "][" + value + "][" + type + "]" + "[" + pointer + "]\n";
-}
+void Monitor::prepareStatement(String name, String value, String type, String pointer) {
 
+    String names = sliceStr(statement, 0);
+    String values = sliceStr(statement, 1);
+    String types = sliceStr(statement, 2);
+    String ptrs = sliceStr(statement, 3);
+
+
+    String sep = (names.length() > 0) ? "," : "";
+
+    statement = "[" + names + sep + name + "]" +
+                "[" + values + sep + value + "]" +
+                "[" + types + sep + type + "]" +
+                "[" + ptrs + sep + pointer + "]\n";
+}
 String Monitor::sliceStr(String txt, int index) {
     int openBracket = -1;
     int closeBracket = -1;
@@ -77,46 +94,130 @@ String Monitor::sliceStr(String txt, int index) {
     return "";
 }
 
+bool Monitor :: checkRepeatedVar(void* ptr){
+    String enderecoHex = "0x" + String((uintptr_t)ptr, HEX);
+    String data = sliceStr(statement, 3); // Pega a parte dos ponteiros
+    if (data.length() == 0) return false;
+    String ptrAux = "";
+    for(int i = 0; i < data.length(); i++){
+        char c = data.charAt(i);
+        if(c != ','){
+            ptrAux += c;
+        }
+        if(c == ',' || i == data.length() - 1){
+            if(ptrAux.equals(enderecoHex)){
+                return true;
+            }
+            ptrAux = "";
+        }
+    }
+    return false;
+}
+
 void Monitor :: beggin(){
     web.getConection();
 }
 
 void Monitor :: addInt(String nome, int* ptr){
+    if(checkRepeatedVar(ptr))return;
     convertData(ptr, 'i', nome);
     quantVar++;
 }
 
 void Monitor :: addFloat(String nome, float* ptr){
+    if(checkRepeatedVar(ptr))return;
     convertData(ptr, 'f', nome);
     quantVar++;
 }
 
 void Monitor :: addBool(String nome, bool* ptr){
+    if(checkRepeatedVar(ptr))return;
     convertData(ptr, 'b', nome);
     quantVar++;
 }
 
 void Monitor :: addChar(String nome, char* ptr){
-    convertData(ptr, 'i', nome);
+    if(checkRepeatedVar(ptr))return;
+    convertData(ptr, 'c', nome);
     quantVar++;
 }
 
 void Monitor :: addString(String nome, String* ptr){
-    convertData(&ptr, 's', nome);
+    if(checkRepeatedVar(ptr))return;
+    convertData(ptr, 's', nome);
     quantVar++;
+}
+
+void Monitor :: addDouble(String nome, double* ptr){
+    if(checkRepeatedVar(ptr))return;
+    convertData(ptr, 'd', nome);
+    quantVar++;
+}
+
+void Monitor :: addFloat(String nome, float* ptr){
+    if(checkRepeatedVar(ptr))return;
+    convertData(ptr, 'd', nome);
+    quantVar++;
+}
+
+void Monitor::updateDataToSend() {
+    String pointersStr = sliceStr(statement, 3);
+    String typesStr = sliceStr(statement, 2);
+    String newValues = "";
+    
+    int ptrStart = 0;
+    int typeStart = 0;
+
+    for (int i = 0; i < quantVar; i++) {
+        int ptrComma = pointersStr.indexOf(',', ptrStart);
+        int typeComma = typesStr.indexOf(',', typeStart);
+
+        String currentPtrHex = (ptrComma == -1) ? pointersStr.substring(ptrStart) : pointersStr.substring(ptrStart, ptrComma);
+        String currentType = (typeComma == -1) ? typesStr.substring(typeStart) : typesStr.substring(typeStart, typeComma);
+
+        uintptr_t pointer = strtoul(currentPtrHex.c_str(), NULL, 16);
+        
+        // Só processa se o ponteiro for válido
+        if (pointer != 0) {
+            // Adiciona vírgula ANTES, exceto no primeiro item
+            if (newValues.length() > 0) newValues += ",";
+
+            switch (currentType.charAt(0)) {
+                case 'i': newValues += String(*(int*)pointer); break;
+                case 'f': newValues += String(*(float*)pointer); break;
+                case 'b': newValues += (*(bool*)pointer ? "true" : "false"); break;
+                case 'c': newValues += String(*(char*)pointer); break;
+                case 's': newValues += *(String*)pointer; break;
+                case 'd': newValues += String(*(double*)pointer); break;
+                case 'l': newValues += String(*(long*)pointer); break;
+            }
+        }
+
+        // Atualiza índices
+        ptrStart = ptrComma + 1;
+        typeStart = typeComma + 1;
+        if (ptrComma == -1) break; 
+    }
+
+    String names = sliceStr(statement, 0);
+    String types = sliceStr(statement, 2);
+    String pointers = sliceStr(statement, 3);
+    statement = "[" + names + "][" + newValues + "][" + types + "][" + pointers + "]\n";
 }
 
 void Monitor::update() {
     //data order [pointer],[data], [type];
     if (wait()) {
+        updateDataToSend();
         web.enviaDados(statement);
-        statement = "";
         if (web.checkConnection()) {
             previousTime = millis();
-            
             String payload = web.receiveData(); 
-            if (payload.length() == 0) return; // Segurança contra pacotes vazios
-
+            if (payload.length() == 0) return; 
+            if(payload.equals("__check__")){
+                web.enviaDados("__online__\n");
+                return;
+            }
             uintptr_t pointer = strtoul(sliceStr(payload, 0).c_str(), NULL, 0);
             String valueStr = sliceStr(payload, 1); // Valor recebido
             String typeStr  = sliceStr(payload, 2); // Tipo do dado
@@ -149,6 +250,17 @@ void Monitor::update() {
                 case 'c': {
                     char* ptrTyped = (char*)pointer;
                     *ptrTyped = valueStr.charAt(0);
+                    break;
+                }
+                case 'd': {
+                    double* ptrTyped = (double*)pointer;
+                    *ptrTyped = valueStr.toDouble();
+                    break;
+                }
+
+                case 'l': {
+                    long* ptrTyped = (long*)pointer;
+                    *ptrTyped = valueStr.toInt();
                     break;
                 }
             }
