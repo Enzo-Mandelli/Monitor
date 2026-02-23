@@ -60,6 +60,7 @@ String Web :: receiveData(){
             String comando = tcpClient.readStringUntil('\n'); 
             comando.trim(); // Remove espaços ou \r extras
             Serial.print("Recebido do Java: ");
+            Serial.println(comando);
             data = comando;
         }
     }else{
